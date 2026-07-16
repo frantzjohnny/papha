@@ -37,7 +37,10 @@ export interface Photo {
 
 export const resolveImageUrl = (url: string): string => {
   if (url && url.startsWith('/src/assets/images/')) {
-    return url.replace('/src/assets/images/', '/assets/images/');
+    return url.replace('/src/assets/images/', '/images/galerie/');
+  }
+  if (url && url.startsWith('/assets/images/')) {
+    return url.replace('/assets/images/', '/images/galerie/');
   }
   return url;
 };
@@ -66,13 +69,13 @@ const INITIAL_ALBUMS: Album[] = [
     description: "Retour en images sur la 17ème édition des Journées Portes Ouvertes des Associations Franco-Haïtiennes, sous le thème « Diaspora Haïtienne : Investir pour Transformer Haïti ».",
     type: "événement",
     annee: "2026",
-    coverUrl: "/assets/images/regenerated_image_1783892647759.png",
+    coverUrl: "/images/galerie/regenerated_image_1783892647759.png",
     seoTitle: "Galerie - 17ᵉ Journée Portes Ouvertes | PAFHA",
     seoDescription: "Photos de la 17ème Journée Portes Ouvertes de la PAFHA à Saint-Denis.",
     photos: [
       {
         id: "jpo-1",
-        url: "/assets/images/regenerated_image_1783892647759.png",
+        url: "/images/galerie/regenerated_image_1783892647759.png",
         alt: "Grande salle de conférence de la 17ème JPO à Saint-Denis"
       }
     ]
