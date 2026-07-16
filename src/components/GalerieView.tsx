@@ -35,6 +35,13 @@ export interface Photo {
   alt: string;
 }
 
+export const resolveImageUrl = (url: string): string => {
+  if (url && url.startsWith('/src/assets/images/')) {
+    return url.replace('/src/assets/images/', '/assets/images/');
+  }
+  return url;
+};
+
 export interface Album {
   id: string;
   titre: string;
@@ -59,13 +66,13 @@ const INITIAL_ALBUMS: Album[] = [
     description: "Retour en images sur la 17ème édition des Journées Portes Ouvertes des Associations Franco-Haïtiennes, sous le thème « Diaspora Haïtienne : Investir pour Transformer Haïti ».",
     type: "événement",
     annee: "2026",
-    coverUrl: "/src/assets/images/regenerated_image_1783892647759.png",
+    coverUrl: "/assets/images/regenerated_image_1783892647759.png",
     seoTitle: "Galerie - 17ᵉ Journée Portes Ouvertes | PAFHA",
     seoDescription: "Photos de la 17ème Journée Portes Ouvertes de la PAFHA à Saint-Denis.",
     photos: [
       {
         id: "jpo-1",
-        url: "/src/assets/images/regenerated_image_1783892647759.png",
+        url: "/assets/images/regenerated_image_1783892647759.png",
         alt: "Grande salle de conférence de la 17ème JPO à Saint-Denis"
       }
     ]
@@ -816,7 +823,7 @@ export default function GalerieView({ onBack, initialSelectedAlbumId }: GalerieV
                       <div className="relative aspect-video overflow-hidden bg-primary-dark">
                         {hasCustomCover ? (
                           <img 
-                            src={album.coverUrl} 
+                            src={resolveImageUrl(album.coverUrl)} 
                             alt={album.titre} 
                             loading="lazy"
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
@@ -1025,7 +1032,7 @@ export default function GalerieView({ onBack, initialSelectedAlbumId }: GalerieV
                       className="group aspect-square bg-surface border border-border rounded-2xl overflow-hidden relative shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-zoom-in"
                     >
                       <img 
-                        src={photo.url} 
+                        src={resolveImageUrl(photo.url)} 
                         alt={photo.alt} 
                         loading="lazy"
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -1154,7 +1161,7 @@ export default function GalerieView({ onBack, initialSelectedAlbumId }: GalerieV
                 onMouseLeave={handleMouseUp}
               >
                 <img 
-                  src={activeAlbum.photos[lightboxIndex].url} 
+                  src={resolveImageUrl(activeAlbum.photos[lightboxIndex].url)} 
                   alt={activeAlbum.photos[lightboxIndex].alt} 
                   style={{
                     transform: `scale(${zoomScale}) translate(${panOffset.x / zoomScale}px, ${panOffset.y / zoomScale}px)`,
@@ -1286,7 +1293,7 @@ export default function GalerieView({ onBack, initialSelectedAlbumId }: GalerieV
                         name="coverUrl"
                         type="text" 
                         defaultValue={editingAlbum?.coverUrl || ''}
-                        placeholder="/src/assets/images/... ou URL"
+                        placeholder="/assets/images/... ou URL"
                         className="w-full bg-surface-2 p-3.5 rounded-xl border border-border focus:ring-2 ring-primary outline-none text-sm transition-all"
                       />
                     </div>

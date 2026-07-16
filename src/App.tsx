@@ -55,7 +55,7 @@ const HERO_SLIDES = [
     title: { main: "17ᵉ Journée", sub: "Portes Ouvertes" },
     subtitle: "Diaspora Haïtienne : Investir pour Transformer Haïti.",
     description: "La PAFHA a le plaisir de vous inviter à la 17ᵉ Journée Portes Ouvertes. Un événement majeur de partage, d’échanges et d'engagement.",
-    image: "/src/assets/images/regenerated_image_1783892647759.png",
+    image: "/assets/images/regenerated_image_1783892647759.png",
     articleId: 'journee-portes-ouvertes-2026'
   },
   {
@@ -64,7 +64,7 @@ const HERO_SLIDES = [
     title: { main: "Leadership Féminin", sub: "& Projets Durables" },
     subtitle: "Entrepreneuriat diasporique au féminin : de l'idée à l'impact.",
     description: "Une journée stratégique pour structurer vos projets et bâtir une trajectoire crédible de financement.",
-    image: "/src/assets/images/regenerated_image_1784216879674.png",
+    image: "/assets/images/regenerated_image_1784216879674.png",
     articleId: 'leadership-feminin-diaspora-2026'
   },
   {
@@ -161,7 +161,7 @@ const ARTICLES = [
     date: '6 juin 2026',
     lieu: 'Saint-Denis',
     auteur: 'PAFHA',
-    image: '/src/assets/images/regenerated_image_1783892647759.png',
+    image: '/assets/images/regenerated_image_1783892647759.png',
     extrait: 'La PAFHA a le plaisir de vous inviter à la 17ᵉ Journée Portes Ouvertes des Associations Franco-Haïtiennes, un événement majeur de rencontre, de partage et d’échanges autour du rôle de la diaspora dans le développement d’Haïti.',
     contenu: `
       <div class="space-y-8">
@@ -245,7 +245,7 @@ const ARTICLES = [
     date: '25 avril 2026',
     lieu: 'Pantin',
     auteur: 'PAFHA',
-    image: '/src/assets/images/regenerated_image_1784216879674.png',
+    image: '/assets/images/regenerated_image_1784216879674.png',
     extrait: 'Une journée stratégique dédiée aux femmes de la diaspora pour structurer un projet, clarifier un modèle et bâtir une trajectoire crédible de financement.',
     contenu: `
       <div class="space-y-8">
@@ -298,7 +298,7 @@ const ARTICLES = [
     date: '25 avril 2026',
     lieu: 'Pantin',
     auteur: 'Esther Saint-Ville',
-    image: '/src/assets/images/regenerated_image_1784216881162.png',
+    image: '/assets/images/regenerated_image_1784216881162.png',
     extrait: 'Une journée de formation intensive pour les femmes de la diaspora.',
     contenu: '<h2>Leadership Féminin</h2><p>Le 25 avril 2026...</p>',
     tags: ['Formation', 'Leadership']
@@ -1181,7 +1181,7 @@ export default function App() {
                 </div>
                 <div className="relative reveal mt-12 lg:mt-0">
                   <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl relative z-10 border-4 md:border-8 border-white">
-                    <img src="/src/assets/images/regenerated_image_1784216878760.jpg" alt="Action Solidaire" className="w-full h-full object-cover" />
+                    <img src="/assets/images/regenerated_image_1784216878760.jpg" alt="Action Solidaire" className="w-full h-full object-cover" />
                   </div>
                   <div className="absolute -bottom-6 -right-4 md:-bottom-10 md:-right-10 w-4/5 md:w-2/3 aspect-video bg-accent rounded-2xl z-20 shadow-xl p-6 md:p-8 flex flex-col justify-center">
                     <p className="italic font-display text-lg md:text-2xl text-primary-dark mb-2 md:mb-4">« Un chèque vaut de l'argent, un coup de main vaut de l'or. »</p>
@@ -1323,7 +1323,7 @@ export default function App() {
       <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'header-scroll' : 'bg-transparent py-6'}`}>
         <nav className="container-custom flex items-center justify-between">
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigateTo('home')}>
-            <img src="/src/assets/images/regenerated_image_1783892647063.png" alt="Logo PAFHA" className="h-12 md:h-16" />
+            <img src="/assets/images/regenerated_image_1783892647063.png" alt="Logo PAFHA" className="h-12 md:h-16" />
           </div>
           
           <div className="hidden lg:flex items-center gap-10">
