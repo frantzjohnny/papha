@@ -36,6 +36,9 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import GalerieView from './components/GalerieView';
+import AdminPanel from './components/AdminPanel';
+import { getActualites } from './lib/supabase';
+
 
 // --- Constants & Data ---
 
@@ -950,8 +953,42 @@ export default function App() {
   const [galleryTab, setGalleryTab] = useState('photos');
   
   // Custom Router State
-  const [currentPage, setCurrentPage] = useState('home'); // home, don, actualites, article, newsletter, join
+  const [currentPage, setCurrentPage] = useState('home'); // home, don, actualites, article, newsletter, join, admin
   const [selectedItem, setSelectedItem] = useState(null); // for association or article
+
+  const [articlesList, setArticlesList] = useState<any[]>(ARTICLES);
+
+  const loadArticles = async () => {
+    try {
+      const dbActs = await getActualites();
+      if (dbActs && dbActs.length > 0) {
+        const mapped = dbActs.map(act => ({
+          id: act.id,
+          titre: act.titre,
+          badge: act.categorie || 'Actualité',
+          badgeColor: act.categorie === 'Formation' ? 'accent' : 'secondary',
+          date: act.date_publication ? new Date(act.date_publication).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Récemment',
+          lieu: (act as any).lieu || 'Paris',
+          auteur: act.auteur || 'PAFHA',
+          image: act.image_url || 'https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=600',
+          extrait: act.resume || '',
+          contenu: act.contenu || '',
+          tags: [act.categorie || 'Actualité']
+        }));
+        setArticlesList(mapped);
+      } else {
+        setArticlesList(ARTICLES);
+      }
+    } catch (err) {
+      console.warn("Could not fetch articles from Supabase:", err);
+      setArticlesList(ARTICLES);
+    }
+  };
+
+  useEffect(() => {
+    loadArticles();
+  }, [currentPage]);
+
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastRedirectUrl, setToastRedirectUrl] = useState<string | null>(null);
@@ -1059,6 +1096,8 @@ export default function App() {
 
   const renderContent = () => {
     switch (currentPage) {
+      case 'admin':
+        return <AdminPanel onBack={() => navigateTo('home')} />;
       case 'don':
         return <DonView onBack={() => navigateTo('home')} />;
       case 'article':
@@ -1081,7 +1120,7 @@ export default function App() {
               </button>
               <SectionHeading overtitle="Média" title="Toute l'actualité de la plateforme" subtitle="Retrouvez ici l'ensemble de nos publications, annonces et reportages." />
               <div className="grid lg:grid-cols-2 gap-10">
-                {ARTICLES.map(art => (
+                {articlesList.map(art => (
                   <article key={art.id} onClick={() => navigateTo('article', art)} className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 group cursor-pointer reveal flex flex-col md:flex-row">
                     <div className="md:w-1/3 aspect-video md:aspect-square overflow-hidden relative">
                       <img src={art.image} alt={art.titre} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
@@ -1128,7 +1167,7 @@ export default function App() {
                       onClick={() => {
                         const slide = HERO_SLIDES[currentSlide];
                         if (slide.articleId) {
-                          const article = ARTICLES.find(a => a.id === slide.articleId);
+                          const article = articlesList.find(a => a.id === slide.articleId);
                           if (article) {
                             navigateTo('article', article);
                             return;
@@ -1287,7 +1326,7 @@ export default function App() {
                   <button onClick={() => navigateTo('newsletter')} className="btn-outline-blue text-xs">Voir tout l'historique</button>
                 </div>
                 <div className="grid lg:grid-cols-3 gap-10">
-                  {ARTICLES.map(art => (
+                  {articlesList.map(art => (
                     <article key={art.id} onClick={() => navigateTo('article', art)} className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 group cursor-pointer reveal">
                       <div className="aspect-[16/10] overflow-hidden relative">
                         <img src={art.image} alt={art.titre} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
@@ -1588,6 +1627,7 @@ export default function App() {
                 ))}
                 <li><button onClick={() => navigateTo('join')} className="text-accent font-bold hover:brightness-125 transition-all">Rejoindre la plateforme</button></li>
                 <li><button onClick={() => navigateTo('don')} className="text-secondary font-bold hover:brightness-125 transition-all">Faire un don ♥</button></li>
+                <li><button onClick={() => navigateTo('admin')} className="text-white/40 hover:text-white font-mono text-[10px] uppercase tracking-wider transition-colors flex items-center gap-1.5 mt-2">⚙️ Administration</button></li>
               </ul>
             </div>
 

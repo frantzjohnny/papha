@@ -27,6 +27,8 @@ import {
   Info
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { getGalerie } from '../lib/supabase';
+
 
 // --- Types ---
 export interface Photo {
@@ -257,11 +259,11 @@ export default function GalerieView({ onBack, initialSelectedAlbumId }: GalerieV
   // Initialize Albums from localStorage or seed
   useEffect(() => {
     const saved = localStorage.getItem('pafha_galerie_data');
+    let baseAlbums = INITIAL_ALBUMS;
     if (saved) {
       try {
         const parsed: Album[] = JSON.parse(saved);
-        // Migration: automatically update any empty coverUrl or empty photo lists with our beautiful real ones
-        const migrated = parsed.map(album => {
+        baseAlbums = parsed.map(album => {
           const initial = INITIAL_ALBUMS.find(a => a.id === album.id);
           if (initial) {
             return {
@@ -272,15 +274,62 @@ export default function GalerieView({ onBack, initialSelectedAlbumId }: GalerieV
           }
           return album;
         });
-        setAlbums(migrated);
-        localStorage.setItem('pafha_galerie_data', JSON.stringify(migrated));
       } catch (e) {
-        setAlbums(INITIAL_ALBUMS);
+        baseAlbums = INITIAL_ALBUMS;
       }
     } else {
-      setAlbums(INITIAL_ALBUMS);
-      localStorage.setItem('pafha_galerie_data', JSON.stringify(INITIAL_ALBUMS));
+      baseAlbums = INITIAL_ALBUMS;
     }
+
+    // Now dynamically load from Supabase/Local Database and merge!
+    const mergeSupabasePhotos = async () => {
+      try {
+        const dbPhotos = await getGalerie();
+        const updatedAlbums = [...baseAlbums];
+
+        dbPhotos.forEach(dbPhoto => {
+          // Find album
+          let album = updatedAlbums.find(a => a.id === dbPhoto.album);
+          if (!album) {
+            // Create dynamic virtual album
+            album = {
+              id: dbPhoto.album,
+              titre: dbPhoto.album.charAt(0).toUpperCase() + dbPhoto.album.slice(1).replace(/-/g, ' '),
+              date: new Date().toISOString().split('T')[0],
+              lieu: 'PAFHA',
+              description: 'Album d’images synchronisé depuis Supabase.',
+              type: 'autre',
+              annee: new Date().getFullYear().toString(),
+              coverUrl: dbPhoto.image_url,
+              photos: []
+            };
+            updatedAlbums.push(album);
+          }
+
+          // Check if photo already in album
+          const photoExists = album.photos.some(p => p.id === dbPhoto.id || p.url === dbPhoto.image_url);
+          if (!photoExists) {
+            album.photos.push({
+              id: dbPhoto.id,
+              url: dbPhoto.image_url,
+              alt: dbPhoto.titre || dbPhoto.description || 'Image'
+            });
+            // Update coverUrl if empty or placeholder
+            if (!album.coverUrl) {
+              album.coverUrl = dbPhoto.image_url;
+            }
+          }
+        });
+
+        setAlbums(updatedAlbums);
+        localStorage.setItem('pafha_galerie_data', JSON.stringify(updatedAlbums));
+      } catch (err) {
+        console.warn("Could not merge Supabase gallery photos:", err);
+        setAlbums(baseAlbums);
+      }
+    };
+
+    mergeSupabasePhotos();
   }, []);
 
   // Sync to localStorage on change
