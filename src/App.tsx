@@ -953,6 +953,9 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState('home'); // home, don, actualites, article, newsletter, join
   const [selectedItem, setSelectedItem] = useState(null); // for association or article
 
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastRedirectUrl, setToastRedirectUrl] = useState<string | null>(null);
+
   const navigateTo = (page, item = null) => {
     setCurrentPage(page);
     setSelectedItem(item);
@@ -970,8 +973,15 @@ export default function App() {
     const text = `Nouvelle inscription à la newsletter PAFHA :
 - Email : ${email}`;
     const whatsappUrl = `https://api.whatsapp.com/send?phone=33662375402&text=${encodeURIComponent(text)}`;
-    window.open(whatsappUrl, '_blank');
-    alert("Merci pour votre inscription à la newsletter ! Redirection vers WhatsApp...");
+    
+    try {
+      window.open(whatsappUrl, '_blank');
+    } catch (err) {
+      console.warn("Blocked window.open:", err);
+    }
+
+    setToastMessage("Merci pour votre inscription ! Votre message a été généré avec succès.");
+    setToastRedirectUrl(whatsappUrl);
     e.currentTarget.reset();
   };
 
@@ -990,8 +1000,15 @@ export default function App() {
 - Message : ${message}`;
 
     const whatsappUrl = `https://api.whatsapp.com/send?phone=33662375402&text=${encodeURIComponent(text)}`;
-    window.open(whatsappUrl, '_blank');
-    alert("Message envoyé ! Redirection vers WhatsApp...");
+    
+    try {
+      window.open(whatsappUrl, '_blank');
+    } catch (err) {
+      console.warn("Blocked window.open:", err);
+    }
+
+    setToastMessage("Votre message de contact a été généré ! Envoyez-le maintenant sur WhatsApp.");
+    setToastRedirectUrl(whatsappUrl);
     e.currentTarget.reset();
   };
 
@@ -1608,6 +1625,53 @@ export default function App() {
         </div>
       </footer>
       
+      {/* Toast Feedback Notification */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div 
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, scale: 0.9 }}
+            className="fixed bottom-8 right-8 z-[200] max-w-md w-[calc(100vw-4rem)] bg-white text-primary-dark p-6 rounded-2xl shadow-2xl border border-border flex flex-col gap-4"
+          >
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary shrink-0">
+                <CheckCircle2 size={24} />
+              </div>
+              <div className="flex-1">
+                <h5 className="font-display font-bold text-primary text-sm">Action réussie !</h5>
+                <p className="text-xs text-text-muted mt-1 leading-relaxed">{toastMessage}</p>
+              </div>
+              <button 
+                onClick={() => setToastMessage(null)} 
+                className="text-text-light hover:text-text p-1 rounded-lg hover:bg-surface-2"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            {toastRedirectUrl && (
+              <div className="flex gap-3 justify-end">
+                <button 
+                  onClick={() => setToastMessage(null)}
+                  className="px-4 py-2 text-[10px] font-mono uppercase tracking-wider text-text-light hover:text-text font-bold"
+                >
+                  Fermer
+                </button>
+                <a 
+                  href={toastRedirectUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setToastMessage(null)}
+                  className="px-5 py-2.5 bg-secondary text-white rounded-lg text-[10px] font-mono uppercase tracking-wider font-bold hover:brightness-110 shadow-md transition-all flex items-center gap-2"
+                >
+                  Ouvrir WhatsApp <ArrowRight size={12} />
+                </a>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Scroll Progress Bar */}
       <div id="scroll-progress" style={{ width: `${Math.min(100, Math.max(0, (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100))}%` }} />
     </div>

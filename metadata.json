@@ -2,5 +2,7 @@
   "name": "Remix: PAFHA - Plateforme d\u0027Associations Franco-Haïtiennes v2",
   "description": "Portail institutionnel complet de la PAFHA. Réseau, solidarité, formation et développement durable. Design expert UI/UX.",
   "requestFramePermissions": [],
-  "majorCapabilities": []
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

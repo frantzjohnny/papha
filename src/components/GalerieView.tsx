@@ -77,6 +77,11 @@ const INITIAL_ALBUMS: Album[] = [
         id: "jpo-1",
         url: "/images/galerie/regenerated_image_1783892647759.png",
         alt: "Grande salle de conférence de la 17ème JPO à Saint-Denis"
+      },
+      {
+        id: "jpo-2",
+        url: "/images/galerie/regenerated_image_1783892644016.png",
+        alt: "Stands et animations des associations membres"
       }
     ]
   },
@@ -88,10 +93,21 @@ const INITIAL_ALBUMS: Album[] = [
     description: "Journée stratégique pour structurer les projets et bâtir une trajectoire crédible de financement, dédiée aux femmes entrepreneures de la diaspora.",
     type: "formation",
     annee: "2026",
-    coverUrl: "",
+    coverUrl: "/images/galerie/regenerated_image_1784216879674.png",
     seoTitle: "Galerie - Leadership Féminin & Projets Durables | PAFHA",
     seoDescription: "Images de l'atelier d'accompagnement à l'entrepreneuriat féminin à Pantin.",
-    photos: []
+    photos: [
+      {
+        id: "lf-1",
+        url: "/images/galerie/regenerated_image_1784216879674.png",
+        alt: "Atelier de formation sur l'impact féminin"
+      },
+      {
+        id: "lf-2",
+        url: "/images/galerie/regenerated_image_1784216881162.png",
+        alt: "Session interactive d'accompagnement de projets"
+      }
+    ]
   },
   {
     id: "conferences-climat-2025",
@@ -101,10 +117,16 @@ const INITIAL_ALBUMS: Album[] = [
     description: "Conférence-débat sur les défis environnementaux, la transition écologique et le rôle des associations membres de la PAFHA.",
     type: "conférence",
     annee: "2025",
-    coverUrl: "",
+    coverUrl: "/images/galerie/regenerated_image_1784123062977.jpg",
     seoTitle: "Galerie - Conférence Transition Ecologique | PAFHA",
     seoDescription: "Conférence climat et transition écologique en Haïti.",
-    photos: []
+    photos: [
+      {
+        id: "cc-1",
+        url: "/images/galerie/regenerated_image_1784123062977.jpg",
+        alt: "Table ronde sur le climat et l'éducation"
+      }
+    ]
   },
   {
     id: "ag-2025",
@@ -114,10 +136,16 @@ const INITIAL_ALBUMS: Album[] = [
     description: "Rassemblement des associations membres de la PAFHA pour le bilan d'activité, la présentation des rapports financiers et l'élection du conseil.",
     type: "autre",
     annee: "2025",
-    coverUrl: "",
+    coverUrl: "/images/galerie/regenerated_image_1783892647063.png",
     seoTitle: "Galerie - Assemblée Générale 2025 | PAFHA",
     seoDescription: "Bilan d'activité et échanges démocratiques de l'assemblée générale 2025.",
-    photos: []
+    photos: [
+      {
+        id: "ag-1",
+        url: "/images/galerie/regenerated_image_1783892647063.png",
+        alt: "Membres du réseau PAFHA réunis lors de l'AG 2025"
+      }
+    ]
   },
   {
     id: "reunions-mensuelles-2026",
@@ -127,10 +155,16 @@ const INITIAL_ALBUMS: Album[] = [
     description: "Sessions mensuelles de travail pour coordonner les actions des associations membres et préparer les prochains temps forts.",
     type: "autre",
     annee: "2026",
-    coverUrl: "",
+    coverUrl: "/images/galerie/regenerated_image_1783892647063.png",
     seoTitle: "Galerie - Réunions de Concertation | PAFHA",
     seoDescription: "Moments d'échange et d'organisation interne entre membres du bureau.",
-    photos: []
+    photos: [
+      {
+        id: "rm-1",
+        url: "/images/galerie/regenerated_image_1783892647063.png",
+        alt: "Réunion de coordination des associations de la diaspora"
+      }
+    ]
   },
   {
     id: "fete-huma-2025",
@@ -140,10 +174,16 @@ const INITIAL_ALBUMS: Album[] = [
     description: "Célébration de la culture haïtienne, espace de gastronomie, d'artisanat et d'échanges solidaires pendant trois jours d'exposition.",
     type: "culture",
     annee: "2025",
-    coverUrl: "",
+    coverUrl: "/images/galerie/regenerated_image_1783892647759.png",
     seoTitle: "Galerie - PAFHA à la Fête de l'Huma | PAFHA",
     seoDescription: "Découverte de l'artisanat et des projets d'aide au développement d'Haïti.",
-    photos: []
+    photos: [
+      {
+        id: "fh-1",
+        url: "/images/galerie/regenerated_image_1783892647759.png",
+        alt: "Kiosque PAFHA à la Fête de l'Humanité"
+      }
+    ]
   },
   {
     id: "mission-haiti-nord-2024",
@@ -153,10 +193,16 @@ const INITIAL_ALBUMS: Album[] = [
     description: "Visites de terrain et réunions avec les coopératives de producteurs locaux soutenues par la plateforme.",
     type: "mission",
     annee: "2024",
-    coverUrl: "",
+    coverUrl: "/images/galerie/regenerated_image_1784216878760.jpg",
     seoTitle: "Galerie - Mission d'appui Nord d'Haïti | PAFHA",
     seoDescription: "Suivi et évaluation des projets agricoles de développement local de la PAFHA.",
-    photos: []
+    photos: [
+      {
+        id: "mn-1",
+        url: "/images/galerie/regenerated_image_1784216878760.jpg",
+        alt: "Visite de terrain dans les exploitations agricoles partenaires"
+      }
+    ]
   }
 ];
 
@@ -213,7 +259,21 @@ export default function GalerieView({ onBack, initialSelectedAlbumId }: GalerieV
     const saved = localStorage.getItem('pafha_galerie_data');
     if (saved) {
       try {
-        setAlbums(JSON.parse(saved));
+        const parsed: Album[] = JSON.parse(saved);
+        // Migration: automatically update any empty coverUrl or empty photo lists with our beautiful real ones
+        const migrated = parsed.map(album => {
+          const initial = INITIAL_ALBUMS.find(a => a.id === album.id);
+          if (initial) {
+            return {
+              ...album,
+              coverUrl: album.coverUrl || initial.coverUrl,
+              photos: album.photos && album.photos.length > 0 ? album.photos : initial.photos
+            };
+          }
+          return album;
+        });
+        setAlbums(migrated);
+        localStorage.setItem('pafha_galerie_data', JSON.stringify(migrated));
       } catch (e) {
         setAlbums(INITIAL_ALBUMS);
       }

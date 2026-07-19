@@ -8,6 +8,42 @@
     <script>
       // Global configuration and fixes for the sandbox environment
       (function() {
+        // Filter out third-party extension errors (like MetaMask) to prevent false-positives
+        window.addEventListener('error', function(event) {
+          try {
+            const message = event.message || '';
+            const filename = event.filename || '';
+            if (
+              message.toLowerCase().includes('metamask') || 
+              message.toLowerCase().includes('ethereum') || 
+              filename.includes('chrome-extension') || 
+              filename.includes('extension')
+            ) {
+              console.warn('Filtered third-party extension error:', message);
+              event.stopImmediatePropagation();
+              event.preventDefault();
+              return true;
+            }
+          } catch (e) {}
+        }, true);
+
+        window.addEventListener('unhandledrejection', function(event) {
+          try {
+            const reason = event.reason;
+            const message = (reason && (reason.message || reason.toString())) || '';
+            if (
+              message.toLowerCase().includes('metamask') || 
+              message.toLowerCase().includes('ethereum') ||
+              message.toLowerCase().includes('rpc')
+            ) {
+              console.warn('Filtered third-party promise rejection:', message);
+              event.stopImmediatePropagation();
+              event.preventDefault();
+              return true;
+            }
+          } catch (e) {}
+        }, true);
+
         // Fix for window.fetch in restricted environments
         try {
           const original = window.fetch;
